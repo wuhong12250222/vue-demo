@@ -1,0 +1,213 @@
+<template>
+  <div class="layout">
+    <el-container>
+      <el-header>
+        <el-row>
+          <el-col :span="3">
+            <div class="grid-content bg-purple">
+              <img src="./logo.png" alt="" class="pic">
+            </div>
+          </el-col>
+          <el-col :span="18"><div class="grid-content bg-purple-light"><h1>电商后台管理系统</h1></div></el-col>
+          <el-col :span="3">
+            <div class="grid-content bg-purple quit">
+              <el-button type="text" class="quit" @click="handleLogout"><h3>退出</h3></el-button>
+            </div>
+          </el-col>
+        </el-row>
+      </el-header>
+      <el-container>
+        <el-aside width="200px">
+          <el-col :span="12">
+            <el-menu
+              default-active="2"
+              class="el-menu-vertical-demo"
+              @open="handleOpen"
+              @close="handleClose"
+              :router="true"
+              background-color="#545c64"
+              text-color="#fff"
+              active-text-color="#ffd04b">
+              <el-submenu :index="first.path" v-for="first in menus" :key="first.id">
+                <template slot="title">
+                  <span class="iconfont icon-duixiang"></span>
+                  <span>{{first.authName}}</span>
+                </template>
+                <el-menu-item-group v-for="second in first.children" :key="second.id">
+                  <el-menu-item :index="`/${second.path}`">
+                    <span class="iconfont icon-qitapeizhi"></span>
+                    {{second.authName}}
+                  </el-menu-item>
+                </el-menu-item-group>
+              </el-submenu>
+              <!-- <el-submenu index="2">
+                <template slot="title">
+                  <i class="el-icon-location"></i>
+                  <span>权限管理</span>
+                </template>
+                <el-menu-item-group>
+                  <el-menu-item index="/roles"><i class="el-icon-menu"></i>角色列表</el-menu-item>
+                </el-menu-item-group>
+                <el-menu-item-group>
+                  <el-menu-item index="/rights"><i class="el-icon-menu"></i>权限列表</el-menu-item>
+                </el-menu-item-group>
+              </el-submenu>
+              <el-submenu index="3">
+                <template slot="title">
+                  <i class="el-icon-location"></i>
+                  <span>商品管理</span>
+                </template>
+                <el-menu-item-group>
+                  <el-menu-item index="3-1"><i class="el-icon-menu"></i>商品列表</el-menu-item>
+                </el-menu-item-group>
+                <el-menu-item-group>
+                  <el-menu-item index="3-2"><i class="el-icon-menu"></i>分类参数</el-menu-item>
+                </el-menu-item-group>
+                <el-menu-item-group>
+                  <el-menu-item index="3-3"><i class="el-icon-menu"></i>商品分类</el-menu-item>
+                </el-menu-item-group>
+              </el-submenu>
+              <el-submenu index="4">
+                <template slot="title">
+                  <i class="el-icon-location"></i>
+                  <span>订单管理</span>
+                </template>
+                <el-menu-item-group>
+                  <el-menu-item index="4-1"><i class="el-icon-menu"></i>订单列表</el-menu-item>
+                </el-menu-item-group>
+              </el-submenu>
+              <el-submenu index="5">
+                <template slot="title">
+                  <i class="el-icon-location"></i>
+                  <span>数据统计</span>
+                </template>
+                <el-menu-item-group>
+                  <el-menu-item index="5-1"><i class="el-icon-menu"></i>数据报表</el-menu-item>
+                </el-menu-item-group>
+              </el-submenu> -->
+            </el-menu>
+          </el-col>
+        </el-aside>
+        <el-main>
+          <el-breadcrumb separator="/" style="margin-bottom:15px">
+            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item><a href="/">用户管理</a></el-breadcrumb-item>
+            <el-breadcrumb-item>用户列表</el-breadcrumb-item>
+          </el-breadcrumb>
+          <router-view></router-view>
+        </el-main>
+      </el-container>
+    </el-container>
+  </div>
+</template>
+
+<script>
+import { getRightsMenu } from '../../api/rights.js'
+export default {
+  name: 'Layout',
+  components: {
+  },
+  created () {
+    this.handleMenu()
+  },
+  data () {
+    return {
+      menus: []
+    }
+  },
+  methods: {
+    handleOpen (key, keyPath) {
+    },
+    handleClose (key, keyPath) {
+    },
+    handleLogout () {
+      this.$confirm('确定退出吗, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        window.localStorage.removeItem('token')
+        this.$router.replace('/login')
+        this.$message({
+          type: 'success',
+          message: '退出成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消退出'
+        })
+      })
+    },
+    async handleMenu () {
+      const { data } = await getRightsMenu()
+      this.menus = data
+    }
+  }
+}
+</script>
+
+<style scoped>
+.layout {
+  height: 100%;
+}
+.el-container {
+  height: 100%;
+}
+.el-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.pic {
+  margin-top: 38px;
+}
+.el-header {
+    background-color: #B3C0D1;
+    color: #333;
+    text-align: center;
+    line-height: 90px;
+    height: 70px!important;
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+.el-aside {
+  background-color: #D3DCE6;
+  color: #333;
+  text-align: center;
+  height: 100%;
+  width: 220px!important;
+}
+.el-submenu__title {
+  padding: 0px!important;
+}
+.el-main {
+  background-color: #E9EEF3;
+  color: #333;
+  /* text-align: center; */
+  height: 100%;
+}
+.el-col-12 {
+  width: 100%;
+  height: 100%;
+}
+.el-menu {
+  height: 100%;
+  border-right: none;
+}
+.el-menu-item {
+  padding-left: 90px!important;
+}
+.el-menu-item-group {
+  padding-left: 0;
+}
+div.el-menu-item-group__title {
+  padding-left: 25px!important;
+  height: 0px!important;
+}
+.element.style {
+  padding-left: 0!important;
+}
+</style>
